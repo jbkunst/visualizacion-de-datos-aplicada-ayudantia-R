@@ -1,0 +1,621 @@
+---
+title: "Visualización de datos aplicada"
+pagetitle: "Visualización de datos aplicada"
+subtitle: "Ayudantía práctica en R"
+author: "<br>Joshua Kunst<br>@jbkunst"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    self_contained: no
+    css: ["css/xaringan-themer.css", "css/styles.css"]
+    lib_dir: libs    
+    nature:
+      titleSlideClass: ["left", "middle"]
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+source(here::here("docs/knitr-setup.R"))
+library(tidyverse)
+library(flipbookr)
+```
+
+## Antes de empezar
+
+- Repositorio del curso https://github.com/jbkunst/visualizacion-de-datos-aplicada-ayudantia-R 
+encontraremos el programa, clases, datos.
+
+- La bibliografía complementaría será _R para ciencia de datos_ https://es.r4ds.hadley.nz/, 
+nos servirá como guía.
+
+---
+
+class: center, inverse, middle
+
+# R y Rstudio
+
+_Nuestro ambiente de trabajo_
+
+---
+
+## R y Rstudio 
+
+R es el lenguaje de programación que utilizaremos (como C++, python) y RStudio es un IDE para
+R (como PyCharm para python por ejemplo).
+
+Para utilizar R se puede hacer, en un principio, de dos maneras:
+
+- Local, Instalar R y RStudio en tu PC.
+- Utilizar desde la nube con https://posit.cloud/.
+
+Más detalles en las diferencias en https://github.com/rivaquiroga/taller-r-doctorado-educacion-2022/blob/master/preparacion-instalacion.md
+
+Para conocer un poco más de RStudio https://github.com/rivaquiroga/RLadies-Santiago/blob/master/primeros_pasos_en_R.md.
+
+---
+
+class: center, inverse, middle
+
+# Visualización de datos
+
+_Análisis exploratorio de datos_
+
+
+---
+
+## Análisis Exploratorio de Datos
+
+El **Análisis Exploratorio de Datos** se refiere a un ciclo iterativo en el que:
+
+- Generas preguntas acerca de tus datos.
+- Buscas respuestas visualizando, transformando y modelando tus datos.
+- Usas lo que has aprendido para refinar tus preguntas y/o generar nuevas interrogantes.
+
+Lo anterior es un _copy & paste_ desde [R4DS](https://es.r4ds.hadley.nz/an%C3%A1lisis-exploratorio-de-datos-eda.html#an%C3%A1lisis-exploratorio-de-datos-eda).
+
+
+```{r out.width="60%", fig.align='center', echo=FALSE}
+knitr::include_graphics("images/data-science-explore.svg")
+```
+
+
+---
+
+## Visualización
+
+Definiremos la visualización, en el contexto de análisis de datos, como una manera
+de representar/codificar información, y por tanto una herramienta para analizar
+datos.
+
+```{r out.width="60%", fig.align='center', echo=FALSE}
+knitr::include_graphics("images/data-viz.jpg")
+```
+
+---
+
+## `ggplot2`
+
+```{r out.width="50%", fig.align='center', echo=FALSE}
+knitr::include_graphics("images/viz-mapping-vars.png")
+```
+
+De forma **general**:
+
+```
+ggplot(data = <DATOS>) +
+  <GEOM_FUNCIÓN>(mapping = aes(<MAPEOS>))
+```
+
+---
+
+## `ggplot2`
+
+```{r out.width="50%", fig.align='center', echo=FALSE}
+knitr::include_graphics("images/viz-mapping-vars.png")
+```
+
+De forma **particular**:
+
+```
+ggplot(data = datos) +
+  geom_point(mapping = aes(x = foo, y = bar, size = zaz))
+```
+
+---
+
+## Hagamos un _copy & paste_
+
+```{r out.width="70%", fig.align='center'}
+library(datos)
+library(ggplot2)
+
+ggplot(data = millas) +
+  geom_point(mapping = aes(x = cilindrada, y = autopista))
+```
+
+---
+
+## Hagamos un _copy & paste_ (v2)
+
+```{r out.width="70%", fig.align='center'}
+library(datos)
+library(ggplot2)
+
+ggplot(millas) +
+  geom_point(aes(cilindrada, autopista))
+```
+
+---
+
+## Revisemos los datos
+
+```{r out.width="70%", fig.align='center'}
+library(dplyr)
+
+glimpse(millas)
+```
+
+---
+
+```{r, include=FALSE}
+ggplot2::theme_set(
+  ggplot2::theme_gray(base_size = 7) +
+  theme(legend.position = "bottom")
+)
+```
+
+`r flipbookr::chunk_reveal("millas2", break_type = "auto", title = "## Paso a paso", widths = c(1, 1), chunk_options = "fig.height = 2.7, fig.width = 3")`
+
+```{r millas2, include = FALSE}
+ggplot(
+  millas, 
+  aes(cilindrada, autopista)
+  ) +
+  geom_point(aes(color = traccion)) +
+  geom_smooth() +
+  scale_color_viridis_d(option = "magma") +
+  facet_wrap(vars(anio)) +
+  labs(
+    title = "Un hermoso título",
+    subtitle = "Un bellos y extenso subtítulo",
+    caption = "Un texto que nadie mira",
+    x = "Cilindrada vehículo cc",
+    y = "Rendimiento en autopista km/lts",
+    color = "Tipo tracción"
+    )
+```
+
+---
+
+## Ejercicio: en un script de R:
+
+1. Cargue los paquetes `datos`, `ggplot2` y `dplyr`.
+1. Ejecute `glimpse(vuelos)`.
+1. Objtenga una _muestra_ de 10.000 registros para responder las preguntas utilizando la función `sample_n` (hint (?): `sample_n(vuelos, 1000)`). 
+1. ¿Cuántos filas/columnas tienen los datos?
+1. ¿Cuántos datos son numéricos?
+1. Explore la relación entre `distancia` y `tiempo_vuelo`.
+1. ¿Qué otras preguntas tienes? ¿Como podríamos obtener QUE vuelo es/son el/los más largos?
+1. Reutiliza el código del ejemplo paso a paso para utilizar la función `facet_wrap` 
+con estos datos.
+
+---
+
+```{r, include=FALSE}
+ggplot2::theme_set(
+  ggplot2::theme_minimal(base_size = 7) +
+  theme(legend.position = "bottom")
+)
+```
+
+`r flipbookr::chunk_reveal("vuelos_sample", break_type = 5, title = "## Sirve obtener una **muestra**?", widths = c(1, 1), chunk_options = "fig.height = 2.7, fig.width = 3")`
+
+```{r vuelos_sample, include = FALSE}
+vuelos2 <- sample_n(vuelos, 5000)
+
+ggplot(vuelos2, aes(distancia, tiempo_vuelo)) +
+  geom_point(alpha = 0.05, color = "gray60") +
+  geom_smooth(se = FALSE, color = "darkred") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(limits = c(0, 650))
+```
+
+---
+
+.center[
+```{r, echo=FALSE, out.width="90%"}
+knitr::include_graphics("images/ggplot_elements2.png")
+```
+]
+
+https://bookdown.org/alapo/learnr/data-visualisation.html
+
+---
+
+## Más información sobre visualización
+
+- [Visualización de datos](https://es.r4ds.hadley.nz/visualizaci%C3%B3n-de-datos.html#introducci%C3%B3n-1) en R4DS.
+
+- A _simple_ intro to `ggplot2`. [Post](https://www.rforecology.com/post/a-simple-introduction-to-ggplot2/).
+
+- Visualización desde el análisis de datos. [Slides](https://jkunst.com/slides/202107-visualizacion-desde-el-analsis-de-datos/index.html).
+
+
+---
+
+class: center, inverse, middle
+
+# Transformación y manipulación de datos
+
+```{r, include=FALSE}
+storms <- readr::read_csv(here::here("data/storms.csv"))
+pollution <- readr::read_csv(here::here("data/pollution.csv"))
+```
+
+---
+
+## Transformación de datos
+
+> La visualización es una herramienta importante para la generación de conocimiento; sin embargo, es raro que obtengas los datos exactamente en la forma en que los necesitas. A menudo tendrás que crear algunas variables nuevas o resúmenes, o tal vez solo quieras cambiar el nombre de las variables o reordenar las observaciones para facilitar el trabajo con los datos.
+
+Lo anterior es un _copy & paste_ desde [R4DS](https://es.r4ds.hadley.nz/transform.html).
+
+---
+
+## `dplyr` Lo básico
+
+En este capítulo, aprenderás las cinco funciones clave de **dplyr** que te permiten resolver la gran mayoría de tus desafíos de manipulación de datos:
+
+* Filtrar o elegir las observaciones por sus valores (`filter()` — del inglés filtrar).
+* Reordenar las filas (`arrange()` — del inglés organizar).
+* Seleccionar las variables por sus nombres (`select()` — del inglés seleccionar).
+* Crear nuevas variables con transformaciones de variables existentes (`mutate()` — del inglés mutar o transformar).
+* Contraer muchos valores en un solo resumen (`summarise()` — del inglés resumir).
+
+Todas estas funciones se pueden usar junto con `group_by()` (del inglés _agrupar por_), que cambia el alcance de cada función para que actúe ya no sobre todo el conjunto de datos sino de grupo en grupo.
+
+---
+
+## `dplyr` Lo básico (2)
+
+Todos los verbos funcionan de manera similar:
+
+1. El primer argumento es un *data frame*.
+
+2. Los argumentos posteriores describen qué hacer con el *data frame* usando los nombres de las variables (sin comillas).
+
+3. El resultado es un nuevo *data frame*.
+
+En conjunto, estas propiedades hacen que sea fácil encadenar varios pasos simples para lograr un resultado complejo.
+
+Nuevamente, lo anterior es un _copy & paste_ desde [R4DS](https://es.r4ds.hadley.nz/transform.html).
+
+---
+
+background-image: url(images/dplyr/dplyr_filter.jpg)
+background-size: cover
+
+---
+
+## `filter` Seleccionar Filas
+
+```{r out.width='70%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/filter.png")
+```
+
+---
+
+## `filter` ejemplo
+
+```{r out.width='80%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/filter_example.png")
+```
+
+---
+
+`r flipbookr::chunk_reveal("filter", title = "## <code>filter</code> Código", widths = c(1, 1))`
+
+```{r filter, include = FALSE}
+storms |>
+  filter(storm %in% c("Alberto", "Ana"))
+```
+
+---
+
+## `select` Seleccionar Columnas
+
+```{r out.width='70%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/select.png")
+```
+
+---
+
+## `select` ejemplo
+
+```{r out.width='80%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/select_example.png")
+```
+
+---
+
+`r flipbookr::chunk_reveal("select", title = "## <code>select</code> Código", widths = c(1, 1))`
+
+```{r select, include = FALSE}
+storms |>
+  select(storm, pressure)
+```
+
+---
+
+## `arrange` Ordenar Filas
+
+```{r out.width='70%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/arrange.png")
+```
+
+---
+
+## `arrange` ejemplo
+
+```{r out.width='80%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/arrange_example.png")
+```
+
+---
+
+`r flipbookr::chunk_reveal("arrange", title = "## <code>arrange</code> Código", widths = c(1, 1))`
+
+```{r arrange, include = FALSE}
+storms |>
+  arrange(wind)
+```
+
+---
+
+background-image: url(images/dplyr/dplyr_mutate.png)
+background-size: contain
+
+---
+
+## `mutate` Crear (o transformar) Columnas
+
+```{r out.width='70%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/mutate.png")
+```
+
+---
+
+## `mutate` ejemplo
+
+```{r out.width='80%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/mutate_example.png")
+```
+
+---
+
+`r flipbookr::chunk_reveal("mutate", title = "## <code>mutate</code> Código", widths = c(1, 2))`
+
+```{r mutate, include = FALSE}
+storms |> 
+  mutate(
+    ratio = pressure/wind,
+    inverse = 1/ratio
+    ) |> 
+  mutate(wind = log(wind))
+```
+
+---
+
+## `summarise` Resumir Columnas
+
+```{r out.width='70%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/summarise.png")
+```
+
+---
+
+## `summarise` ejemplo
+
+```{r out.width='80%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/summarise_example.png")
+```
+
+---
+
+`r flipbookr::chunk_reveal("summarise", title = "## <code>summarise</code> Código", widths = c(1, 1))`
+
+```{r summarise, include = FALSE}
+pollution |>
+  summarise(median = median(amount))
+```
+
+---
+
+
+## `group_by |> summarise` Resumir Columnas por Grupos
+
+```{r out.width='70%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/group_by_summarize.png")
+```
+
+---
+
+## `group_by |> summarise` ejemplo
+
+```{r out.width='80%', fig.align='center', echo=FALSE}
+knitr::include_graphics("images/dplyr/group_by_summarize_example.png")
+```
+
+---
+
+`r flipbookr::chunk_reveal("group_by", title = "## <code>group_by |> summarise</code> Código", widths = c(1, 1))`
+
+```{r group_by, include = FALSE}
+pollution |> 
+  group_by(city) |>
+  summarise(
+    mean = mean(amount),
+    sum = sum(amount),
+    n = n()
+  )
+```
+
+
+---
+
+`r flipbookr::chunk_reveal("group_by_spanish", title = "## <code>group_by |> summarise</code> Código <small>(spanish version)</small>", widths = c(1, 1))`
+
+```{r group_by_spanish, include = FALSE}
+pollution |> 
+  group_by(city) |>
+  summarise(
+    promedio = mean(amount),
+    suma = sum(amount),
+    conteo = n()
+  )
+```
+
+
+---
+
+
+## Ejercicio: en un script de R:
+
+<small>
+
+1. Cargue el paquete `tidyverse`, y cree un data frame con columnas `x` e `y`, cada una de las columnas
+sea 1000 números aleatorios entre -1 y 1 (recuerde la función `runif`).
+1. Genere un gráfico de puntos visualizando como se relacionan las variables `x` e `y`.
+1. Con la función `mutate` cree una variable  `r` que sea igual a `x^2 + y^2`, es decir $x^2 + y^2$.
+1. Utilize la función `if_else` (y `mutate`) para generar una cuarta variable cuya definición es: si `r` es mayor que 1 entonces vale "A", en caso contrario "B". Llame esta variable como `r2`.
+1. Ahora vuelva generar el gráfico de 3. pero coloreando el punto de acuerdo a la variable `r2`.
+1. Utilice el _combo_ `group_by(r2) |> count()` para contar cuantos son "A" y "B", y luego generar la columna `p = n/sum(n)`. 
+1. Cree la columna `es_b` que indique con un 1 si el valor de `r2` es "B" y 0 si es "A", para luego
+crear la columna `convergencia` al aplicar la función `cummean` a la columna `es_b`.
+1. con ayuda de la función `row_number()` genere la columna `fila` y haga un gráfico de líneas 
+con `x = fila` e `y = 4 * convergencia`.
+</small>
+
+
+---
+
+
+`r flipbookr::chunk_reveal("solucion", title = "## Posible solución", widths = c(1, 1))`
+
+```{r solucion, include = FALSE}
+library(tidyverse)
+
+set.seed(123)
+
+df <- tibble(
+  x = runif(1000, -1, 1),
+  y = runif(1000, -1, 1)
+)
+
+df |> 
+  mutate(r = x^2 + y^2) |> 
+  mutate(r2 = if_else(r > 1, "A", "B")) |> 
+  mutate(es_b = if_else(r2 == "B", 1, 0)) |> 
+  mutate(conv = cummean(es_b)) |> 
+  mutate(fila = row_number()) 
+```
+
+---
+
+
+`r flipbookr::chunk_reveal("solucion2", title = "## Posible solución v2", widths = c(1, 1), chunk_options = "fig.height = 2.7, fig.width = 3")`
+
+```{r solucion2, include = FALSE}
+library(tidyverse)
+
+set.seed(123)
+
+df <- tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+)
+
+df |> 
+  mutate(
+    r = x^2 + y^2,
+    ri = r < 1,
+    conv = cummean(ri),
+    row = row_number()
+    ) |> 
+  ggplot() +
+  geom_line(aes(row, 4 * conv)) +
+  geom_hline(yintercept = pi, color = "darkred") 
+```
+
+---
+
+`r flipbookr::chunk_reveal("solucion3", title = "## Posible solución v3", widths = c(1, 1), chunk_options = "fig.height = 2.7, fig.width = 3")`
+
+```{r solucion3, include = FALSE}
+library(tidyverse)
+
+set.seed(123)
+
+tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+) |> 
+  mutate(
+    r = x^2 + y^2,
+    ri = r < 1,
+    conv = cummean(ri),
+    row = row_number()
+  ) |> 
+  ggplot() +
+  geom_line(aes(row, 4 * conv)) +
+  geom_hline(yintercept = pi, color = "darkred") +
+  scale_x_continuous(labels = scales::comma_format()) +
+  scale_y_continuous(
+    sec.axis = sec_axis(trans = ~., breaks = pi, labels = expression(pi))
+  )
+```
+
+---
+  
+## El Pipe (_paip_) `|>`
+  
+Los pipes son una herramienta poderosa para expresar claramente una secuencia de múltiples operaciones. Hasta aquí, has venido usándolos sin saber cómo funcionan o qué alternativas existen. En este capítulo ya es tiempo de explorarlos en más detalle. En él aprenderás qué alternativas existen, cuándo no deberías utilizarlos y algunas herramientas útiles relacionadas.
+
+De forma general veremos que `z |> f()` es equivalente a `f(z)` y en el caso 
+de aplicar parámetros extras tenemos que `z |> g(y)` es `g(x, y)`.
+
+En el próximo ejemplo veremos que el **pipe** (`|>` o `%>%`) ayuda a la 
+legibilidad del código.
+
+Más en el capítulo [Pipes](https://es.r4ds.hadley.nz/pipes.html) en R4DS.
+
+
+---
+
+`r flipbookr::chunk_reveal("pipe", title = "## Ejemplo pipe", widths = c(1, 1))`
+
+```{r pipe, include = FALSE, echo=FALSE}
+x <- 34
+
+tan(cos(sqrt(log(x))))
+
+y <- x
+y <- log(y)
+y <- sqrt(y)
+y <- cos(y)
+y <- tan(y)
+y
+
+x |> 
+  log() |> 
+  sqrt() |> 
+  cos() |> 
+  tan()
+```

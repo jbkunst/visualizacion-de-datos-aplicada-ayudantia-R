@@ -1,0 +1,47 @@
+@import url('https://fonts.cdnfonts.com/css/datalegreya');
+
+.title-slide {
+  background-image: url(../images/title-slide-bg.png);
+  background-size: cover;
+}
+
+.title-slide > h1,
+.title-slide > .title > h1 {
+/*  font-family: 'Datalegreya', sans-serif; *
+  font-size: 6em;
+  font-weight: 400; */
+  font-family: 'Alegreya Sans SC';
+  font-size: 3.5em;
+  font-weight: 400;
+}
+
+.title-slide > h1,
+.title-slide > h2 {
+  padding: 0px;
+  margin: 0px;
+}
+
+
+/* para que funciones la slide debe ir class: highlight-last-item */
+.highlight-last-item > ul > li, 
+.highlight-last-item > ol > li {
+  opacity: 0.5;
+}
+
+.highlight-last-item > ul > li:last-of-type,
+.highlight-last-item > ol > li:last-of-type {
+  opacity: 1;
+}
+
+/* espacio para los ul y los  */
+p {
+  line-height: 1.6;
+}
+
+li {
+  margin-bottom: 20px;
+}
+
+li:last-child {
+ margin-bottom: 0px;
+}

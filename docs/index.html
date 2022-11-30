@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Visualización de datos aplicada</title>
+    <meta charset="utf-8" />
+    <meta name="author" content=" Joshua Kunst @jbkunst" />
+    <meta name="date" content="2022-11-30" />
+    <script src="libs/header-attrs-2.17/header-attrs.js"></script>
+    <link rel="stylesheet" href="css/xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="css/styles.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, title-slide
+
+.title[
+# Visualización de datos aplicada
+]
+.subtitle[
+## Ayudantía práctica en R
+]
+.author[
+### <br>Joshua Kunst<br><span class="citation">@jbkunst</span>
+]
+.date[
+### 2022-11-30
+]
+
+---
+
+
+
+
+
+## Antes de empezar
+
+- Repositorio del curso https://github.com/jbkunst/visualizacion-de-datos-aplicada-ayudantia-R 
+encontraremos el programa, clases, datos.
+
+- La bibliografía complementaría será _R para ciencia de datos_ https://es.r4ds.hadley.nz/, 
+nos servirá como guía.
+
+---
+
+class: center, inverse, middle
+
+# R y Rstudio
+
+_Nuestro ambiente de trabajo_
+
+---
+
+## R y Rstudio 
+
+R es el lenguaje de programación que utilizaremos (como C++, python) y RStudio es un IDE para
+R (como PyCharm para python por ejemplo).
+
+Para utilizar R se puede hacer, en un principio, de dos maneras:
+
+- Local, Instalar R y RStudio en tu PC.
+- Utilizar desde la nube con https://posit.cloud/.
+
+Más detalles en las diferencias en https://github.com/rivaquiroga/taller-r-doctorado-educacion-2022/blob/master/preparacion-instalacion.md
+
+Para conocer un poco más de RStudio https://github.com/rivaquiroga/RLadies-Santiago/blob/master/primeros_pasos_en_R.md.
+
+---
+
+class: center, inverse, middle
+
+# Visualización de datos
+
+_Análisis exploratorio de datos_
+
+
+---
+
+## Análisis Exploratorio de Datos
+
+El **Análisis Exploratorio de Datos** se refiere a un ciclo iterativo en el que:
+
+- Generas preguntas acerca de tus datos.
+- Buscas respuestas visualizando, transformando y modelando tus datos.
+- Usas lo que has aprendido para refinar tus preguntas y/o generar nuevas interrogantes.
+
+Lo anterior es un _copy &amp; paste_ desde [R4DS](https://es.r4ds.hadley.nz/an%C3%A1lisis-exploratorio-de-datos-eda.html#an%C3%A1lisis-exploratorio-de-datos-eda).
+
+
+&lt;img src="images/data-science-explore.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+## Visualización
+
+Definiremos la visualización, en el contexto de análisis de datos, como una manera
+de representar/codificar información, y por tanto una herramienta para analizar
+datos.
+
+&lt;img src="images/data-viz.jpg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `ggplot2`
+
+&lt;img src="images/viz-mapping-vars.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+De forma **general**:
+
+```
+ggplot(data = &lt;DATOS&gt;) +
+  &lt;GEOM_FUNCIÓN&gt;(mapping = aes(&lt;MAPEOS&gt;))
+```
+
+---
+
+## `ggplot2`
+
+&lt;img src="images/viz-mapping-vars.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+De forma **particular**:
+
+```
+ggplot(data = datos) +
+  geom_point(mapping = aes(x = foo, y = bar, size = zaz))
+```
+
+---
+
+## Hagamos un _copy &amp; paste_
+
+
+```r
+library(datos)
+library(ggplot2)
+
+ggplot(data = millas) +
+  geom_point(mapping = aes(x = cilindrada, y = autopista))
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-5-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Hagamos un _copy &amp; paste_ (v2)
+
+
+```r
+library(datos)
+library(ggplot2)
+
+ggplot(millas) +
+  geom_point(aes(cilindrada, autopista))
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-6-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Revisemos los datos
+
+
+```r
+library(dplyr)
+
+glimpse(millas)
+```
+
+```
+## Rows: 234
+## Columns: 11
+## $ fabricante  &lt;chr&gt; "audi", "audi", "audi", "audi", "audi", "audi", "audi", "a…
+## $ modelo      &lt;chr&gt; "a4", "a4", "a4", "a4", "a4", "a4", "a4", "a4 quattro", "a…
+## $ cilindrada  &lt;dbl&gt; 1.8, 1.8, 2.0, 2.0, 2.8, 2.8, 3.1, 1.8, 1.8, 2.0, 2.0, 2.8…
+## $ anio        &lt;int&gt; 1999, 1999, 2008, 2008, 1999, 1999, 2008, 1999, 1999, 2008…
+## $ cilindros   &lt;int&gt; 4, 4, 4, 4, 6, 6, 6, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 8, 8, 8…
+## $ transmision &lt;chr&gt; "auto(l5)", "manual(m5)", "manual(m6)", "auto(av)", "auto(…
+## $ traccion    &lt;chr&gt; "d", "d", "d", "d", "d", "d", "d", "4", "4", "4", "4", "4"…
+## $ ciudad      &lt;int&gt; 18, 21, 20, 21, 16, 18, 18, 18, 16, 20, 19, 15, 17, 17, 15…
+## $ autopista   &lt;int&gt; 29, 29, 31, 30, 26, 26, 27, 26, 25, 28, 27, 25, 25, 25, 25…
+## $ combustible &lt;chr&gt; "p", "p", "p", "p", "p", "p", "p", "p", "p", "p", "p", "p"…
+## $ clase       &lt;chr&gt; "compacto", "compacto", "compacto", "compacto", "compacto"…
+```
+
+---
+
+
+
+count: false
+ 
+## Paso a paso
+.panel1-millas2-auto[
+
+```r
+*ggplot(
+* millas,
+* aes(cilindrada, autopista)
+* )
+```
+]
+ 
+.panel2-millas2-auto[
+&lt;img src="index_files/figure-html/millas2_auto_01_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Paso a paso
+.panel1-millas2-auto[
+
+```r
+ggplot(
+  millas,
+  aes(cilindrada, autopista)
+  ) +
+* geom_point(aes(color = traccion))
+```
+]
+ 
+.panel2-millas2-auto[
+&lt;img src="index_files/figure-html/millas2_auto_02_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Paso a paso
+.panel1-millas2-auto[
+
+```r
+ggplot(
+  millas,
+  aes(cilindrada, autopista)
+  ) +
+  geom_point(aes(color = traccion)) +
+* geom_smooth()
+```
+]
+ 
+.panel2-millas2-auto[
+&lt;img src="index_files/figure-html/millas2_auto_03_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Paso a paso
+.panel1-millas2-auto[
+
+```r
+ggplot(
+  millas,
+  aes(cilindrada, autopista)
+  ) +
+  geom_point(aes(color = traccion)) +
+  geom_smooth() +
+* scale_color_viridis_d(option = "magma")
+```
+]
+ 
+.panel2-millas2-auto[
+&lt;img src="index_files/figure-html/millas2_auto_04_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Paso a paso
+.panel1-millas2-auto[
+
+```r
+ggplot(
+  millas,
+  aes(cilindrada, autopista)
+  ) +
+  geom_point(aes(color = traccion)) +
+  geom_smooth() +
+  scale_color_viridis_d(option = "magma") +
+* facet_wrap(vars(anio))
+```
+]
+ 
+.panel2-millas2-auto[
+&lt;img src="index_files/figure-html/millas2_auto_05_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Paso a paso
+.panel1-millas2-auto[
+
+```r
+ggplot(
+  millas,
+  aes(cilindrada, autopista)
+  ) +
+  geom_point(aes(color = traccion)) +
+  geom_smooth() +
+  scale_color_viridis_d(option = "magma") +
+  facet_wrap(vars(anio)) +
+* labs(
+*   title = "Un hermoso título",
+*   subtitle = "Un bellos y extenso subtítulo",
+*   caption = "Un texto que nadie mira",
+*   x = "Cilindrada vehículo cc",
+*   y = "Rendimiento en autopista km/lts",
+*   color = "Tipo tracción"
+*   )
+```
+]
+ 
+.panel2-millas2-auto[
+&lt;img src="index_files/figure-html/millas2_auto_06_output-1.svg" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-millas2-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-millas2-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-millas2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+## Ejercicio: en un script de R:
+
+1. Cargue los paquetes `datos`, `ggplot2` y `dplyr`.
+1. Ejecute `glimpse(vuelos)`.
+1. Objtenga una _muestra_ de 10.000 registros para responder las preguntas utilizando la función `sample_n` (hint (?): `sample_n(vuelos, 1000)`). 
+1. ¿Cuántos filas/columnas tienen los datos?
+1. ¿Cuántos datos son numéricos?
+1. Explore la relación entre `distancia` y `tiempo_vuelo`.
+1. ¿Qué otras preguntas tienes? ¿Como podríamos obtener QUE vuelo es/son el/los más largos?
+1. Reutiliza el código del ejemplo paso a paso para utilizar la función `facet_wrap` 
+con estos datos.
+
+---
+
+
+
+count: false
+ 
+## Sirve obtener una **muestra**?
+.panel1-vuelos_sample-5[
+
+```r
+vuelos2 &lt;- sample_n(vuelos, 5000)
+
+ggplot(vuelos2, aes(distancia, tiempo_vuelo)) +
+  geom_point(alpha = 0.05, color = "gray60") +
+  geom_smooth(se = FALSE, color = "darkred") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(limits = c(0, 650))
+```
+]
+ 
+.panel2-vuelos_sample-5[
+&lt;img src="index_files/figure-html/vuelos_sample_5_01_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Sirve obtener una **muestra**?
+.panel1-vuelos_sample-5[
+
+```r
+vuelos2 &lt;- sample_n(vuelos, 5000)
+
+ggplot(vuelos2, aes(distancia, tiempo_vuelo)) +
+  geom_point(alpha = 0.05, color = "gray60") +
+  geom_smooth(se = FALSE, color = "darkred") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(limits = c(0, 650))
+```
+]
+ 
+.panel2-vuelos_sample-5[
+&lt;img src="index_files/figure-html/vuelos_sample_5_02_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Sirve obtener una **muestra**?
+.panel1-vuelos_sample-5[
+
+```r
+vuelos2 &lt;- sample_n(vuelos, 5000)
+
+ggplot(vuelos2, aes(distancia, tiempo_vuelo)) +
+  geom_point(alpha = 0.05, color = "gray60") +
+  geom_smooth(se = FALSE, color = "darkred") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(limits = c(0, 650))
+```
+]
+ 
+.panel2-vuelos_sample-5[
+&lt;img src="index_files/figure-html/vuelos_sample_5_03_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Sirve obtener una **muestra**?
+.panel1-vuelos_sample-5[
+
+```r
+vuelos2 &lt;- sample_n(vuelos, 5000)
+
+ggplot(vuelos2, aes(distancia, tiempo_vuelo)) +
+  geom_point(alpha = 0.05, color = "gray60") +
+  geom_smooth(se = FALSE, color = "darkred") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(limits = c(0, 650))
+```
+]
+ 
+.panel2-vuelos_sample-5[
+&lt;img src="index_files/figure-html/vuelos_sample_5_04_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Sirve obtener una **muestra**?
+.panel1-vuelos_sample-5[
+
+```r
+vuelos2 &lt;- sample_n(vuelos, 5000)
+
+ggplot(vuelos2, aes(distancia, tiempo_vuelo)) +
+  geom_point(alpha = 0.05, color = "gray60") +
+  geom_smooth(se = FALSE, color = "darkred") +
+  scale_x_continuous(labels = scales::comma) +
+  scale_y_continuous(limits = c(0, 650))
+```
+]
+ 
+.panel2-vuelos_sample-5[
+&lt;img src="index_files/figure-html/vuelos_sample_5_05_output-1.svg" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-vuelos_sample-5 {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-vuelos_sample-5 {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-vuelos_sample-5 {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+.center[
+&lt;img src="images/ggplot_elements2.png" width="90%" /&gt;
+]
+
+https://bookdown.org/alapo/learnr/data-visualisation.html
+
+---
+
+## Más información sobre visualización
+
+- [Visualización de datos](https://es.r4ds.hadley.nz/visualizaci%C3%B3n-de-datos.html#introducci%C3%B3n-1) en R4DS.
+
+- A _simple_ intro to `ggplot2`. [Post](https://www.rforecology.com/post/a-simple-introduction-to-ggplot2/).
+
+- Visualización desde el análisis de datos. [Slides](https://jkunst.com/slides/202107-visualizacion-desde-el-analsis-de-datos/index.html).
+
+
+---
+
+class: center, inverse, middle
+
+# Transformación y manipulación de datos
+
+
+
+---
+
+## Transformación de datos
+
+&gt; La visualización es una herramienta importante para la generación de conocimiento; sin embargo, es raro que obtengas los datos exactamente en la forma en que los necesitas. A menudo tendrás que crear algunas variables nuevas o resúmenes, o tal vez solo quieras cambiar el nombre de las variables o reordenar las observaciones para facilitar el trabajo con los datos.
+
+Lo anterior es un _copy &amp; paste_ desde [R4DS](https://es.r4ds.hadley.nz/transform.html).
+
+---
+
+## `dplyr` Lo básico
+
+En este capítulo, aprenderás las cinco funciones clave de **dplyr** que te permiten resolver la gran mayoría de tus desafíos de manipulación de datos:
+
+* Filtrar o elegir las observaciones por sus valores (`filter()` — del inglés filtrar).
+* Reordenar las filas (`arrange()` — del inglés organizar).
+* Seleccionar las variables por sus nombres (`select()` — del inglés seleccionar).
+* Crear nuevas variables con transformaciones de variables existentes (`mutate()` — del inglés mutar o transformar).
+* Contraer muchos valores en un solo resumen (`summarise()` — del inglés resumir).
+
+Todas estas funciones se pueden usar junto con `group_by()` (del inglés _agrupar por_), que cambia el alcance de cada función para que actúe ya no sobre todo el conjunto de datos sino de grupo en grupo.
+
+---
+
+## `dplyr` Lo básico (2)
+
+Todos los verbos funcionan de manera similar:
+
+1. El primer argumento es un *data frame*.
+
+2. Los argumentos posteriores describen qué hacer con el *data frame* usando los nombres de las variables (sin comillas).
+
+3. El resultado es un nuevo *data frame*.
+
+En conjunto, estas propiedades hacen que sea fácil encadenar varios pasos simples para lograr un resultado complejo.
+
+Nuevamente, lo anterior es un _copy &amp; paste_ desde [R4DS](https://es.r4ds.hadley.nz/transform.html).
+
+---
+
+background-image: url(images/dplyr/dplyr_filter.jpg)
+background-size: cover
+
+---
+
+## `filter` Seleccionar Filas
+
+&lt;img src="images/dplyr/filter.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `filter` ejemplo
+
+&lt;img src="images/dplyr/filter_example.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+count: false
+ 
+## &lt;code&gt;filter&lt;/code&gt; Código
+.panel1-filter-auto[
+
+```r
+*storms
+```
+]
+ 
+.panel2-filter-auto[
+
+```
+## # A tibble: 6 × 4
+##   storm    wind pressure date      
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;    
+## 1 Alberto   110     1007 2000-08-03
+## 2 Alex       45     1009 1998-07-27
+## 3 Allison    65     1005 1995-06-03
+## 4 Ana        40     1013 1997-06-30
+## 5 Arlene     50     1010 1999-06-11
+## 6 Arthur     45     1010 1996-06-17
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;filter&lt;/code&gt; Código
+.panel1-filter-auto[
+
+```r
+storms |&gt;
+* filter(storm %in% c("Alberto", "Ana"))
+```
+]
+ 
+.panel2-filter-auto[
+
+```
+## # A tibble: 2 × 4
+##   storm    wind pressure date      
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;    
+## 1 Alberto   110     1007 2000-08-03
+## 2 Ana        40     1013 1997-06-30
+```
+]
+
+&lt;style&gt;
+.panel1-filter-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-filter-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-filter-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+## `select` Seleccionar Columnas
+
+&lt;img src="images/dplyr/select.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `select` ejemplo
+
+&lt;img src="images/dplyr/select_example.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+count: false
+ 
+## &lt;code&gt;select&lt;/code&gt; Código
+.panel1-select-auto[
+
+```r
+*storms
+```
+]
+ 
+.panel2-select-auto[
+
+```
+## # A tibble: 6 × 4
+##   storm    wind pressure date      
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;    
+## 1 Alberto   110     1007 2000-08-03
+## 2 Alex       45     1009 1998-07-27
+## 3 Allison    65     1005 1995-06-03
+## 4 Ana        40     1013 1997-06-30
+## 5 Arlene     50     1010 1999-06-11
+## 6 Arthur     45     1010 1996-06-17
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;select&lt;/code&gt; Código
+.panel1-select-auto[
+
+```r
+storms |&gt;
+* select(storm, pressure)
+```
+]
+ 
+.panel2-select-auto[
+
+```
+## # A tibble: 6 × 2
+##   storm   pressure
+##   &lt;chr&gt;      &lt;dbl&gt;
+## 1 Alberto     1007
+## 2 Alex        1009
+## 3 Allison     1005
+## 4 Ana         1013
+## 5 Arlene      1010
+## 6 Arthur      1010
+```
+]
+
+&lt;style&gt;
+.panel1-select-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-select-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-select-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+## `arrange` Ordenar Filas
+
+&lt;img src="images/dplyr/arrange.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `arrange` ejemplo
+
+&lt;img src="images/dplyr/arrange_example.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+count: false
+ 
+## &lt;code&gt;arrange&lt;/code&gt; Código
+.panel1-arrange-auto[
+
+```r
+*storms
+```
+]
+ 
+.panel2-arrange-auto[
+
+```
+## # A tibble: 6 × 4
+##   storm    wind pressure date      
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;    
+## 1 Alberto   110     1007 2000-08-03
+## 2 Alex       45     1009 1998-07-27
+## 3 Allison    65     1005 1995-06-03
+## 4 Ana        40     1013 1997-06-30
+## 5 Arlene     50     1010 1999-06-11
+## 6 Arthur     45     1010 1996-06-17
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;arrange&lt;/code&gt; Código
+.panel1-arrange-auto[
+
+```r
+storms |&gt;
+* arrange(wind)
+```
+]
+ 
+.panel2-arrange-auto[
+
+```
+## # A tibble: 6 × 4
+##   storm    wind pressure date      
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;    
+## 1 Ana        40     1013 1997-06-30
+## 2 Alex       45     1009 1998-07-27
+## 3 Arthur     45     1010 1996-06-17
+## 4 Arlene     50     1010 1999-06-11
+## 5 Allison    65     1005 1995-06-03
+## 6 Alberto   110     1007 2000-08-03
+```
+]
+
+&lt;style&gt;
+.panel1-arrange-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-arrange-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-arrange-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+background-image: url(images/dplyr/dplyr_mutate.png)
+background-size: contain
+
+---
+
+## `mutate` Crear (o transformar) Columnas
+
+&lt;img src="images/dplyr/mutate.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `mutate` ejemplo
+
+&lt;img src="images/dplyr/mutate_example.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+count: false
+ 
+## &lt;code&gt;mutate&lt;/code&gt; Código
+.panel1-mutate-auto[
+
+```r
+*storms
+```
+]
+ 
+.panel2-mutate-auto[
+
+```
+## # A tibble: 6 × 4
+##   storm    wind pressure date      
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;    
+## 1 Alberto   110     1007 2000-08-03
+## 2 Alex       45     1009 1998-07-27
+## 3 Allison    65     1005 1995-06-03
+## 4 Ana        40     1013 1997-06-30
+## 5 Arlene     50     1010 1999-06-11
+## 6 Arthur     45     1010 1996-06-17
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;mutate&lt;/code&gt; Código
+.panel1-mutate-auto[
+
+```r
+storms |&gt;
+* mutate(
+*   ratio = pressure/wind,
+*   inverse = 1/ratio
+*   )
+```
+]
+ 
+.panel2-mutate-auto[
+
+```
+## # A tibble: 6 × 6
+##   storm    wind pressure date       ratio inverse
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Alberto   110     1007 2000-08-03  9.15  0.109 
+## 2 Alex       45     1009 1998-07-27 22.4   0.0446
+## 3 Allison    65     1005 1995-06-03 15.5   0.0647
+## 4 Ana        40     1013 1997-06-30 25.3   0.0395
+## 5 Arlene     50     1010 1999-06-11 20.2   0.0495
+## 6 Arthur     45     1010 1996-06-17 22.4   0.0446
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;mutate&lt;/code&gt; Código
+.panel1-mutate-auto[
+
+```r
+storms |&gt;
+  mutate(
+    ratio = pressure/wind,
+    inverse = 1/ratio
+    ) |&gt;
+* mutate(wind = log(wind))
+```
+]
+ 
+.panel2-mutate-auto[
+
+```
+## # A tibble: 6 × 6
+##   storm    wind pressure date       ratio inverse
+##   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt; &lt;date&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 Alberto  4.70     1007 2000-08-03  9.15  0.109 
+## 2 Alex     3.81     1009 1998-07-27 22.4   0.0446
+## 3 Allison  4.17     1005 1995-06-03 15.5   0.0647
+## 4 Ana      3.69     1013 1997-06-30 25.3   0.0395
+## 5 Arlene   3.91     1010 1999-06-11 20.2   0.0495
+## 6 Arthur   3.81     1010 1996-06-17 22.4   0.0446
+```
+]
+
+&lt;style&gt;
+.panel1-mutate-auto {
+  color: black;
+  width: 32.6666666666667%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-mutate-auto {
+  color: black;
+  width: 65.3333333333333%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-mutate-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+## `summarise` Resumir Columnas
+
+&lt;img src="images/dplyr/summarise.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `summarise` ejemplo
+
+&lt;img src="images/dplyr/summarise_example.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+count: false
+ 
+## &lt;code&gt;summarise&lt;/code&gt; Código
+.panel1-summarise-auto[
+
+```r
+*pollution
+```
+]
+ 
+.panel2-summarise-auto[
+
+```
+## # A tibble: 6 × 3
+##   city     size  amount
+##   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt;
+## 1 New York large     23
+## 2 New York small     14
+## 3 London   large     22
+## 4 London   small     16
+## 5 Beijing  large    121
+## 6 Beijing  small     56
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;summarise&lt;/code&gt; Código
+.panel1-summarise-auto[
+
+```r
+pollution |&gt;
+* summarise(median = median(amount))
+```
+]
+ 
+.panel2-summarise-auto[
+
+```
+## # A tibble: 1 × 1
+##   median
+##    &lt;dbl&gt;
+## 1   22.5
+```
+]
+
+&lt;style&gt;
+.panel1-summarise-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-summarise-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-summarise-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+
+## `group_by |&gt; summarise` Resumir Columnas por Grupos
+
+&lt;img src="images/dplyr/group_by_summarize.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## `group_by |&gt; summarise` ejemplo
+
+&lt;img src="images/dplyr/group_by_summarize_example.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+count: false
+ 
+## &lt;code&gt;group_by |&gt; summarise&lt;/code&gt; Código
+.panel1-group_by-auto[
+
+```r
+*pollution
+```
+]
+ 
+.panel2-group_by-auto[
+
+```
+## # A tibble: 6 × 3
+##   city     size  amount
+##   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt;
+## 1 New York large     23
+## 2 New York small     14
+## 3 London   large     22
+## 4 London   small     16
+## 5 Beijing  large    121
+## 6 Beijing  small     56
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;group_by |&gt; summarise&lt;/code&gt; Código
+.panel1-group_by-auto[
+
+```r
+pollution |&gt;
+* group_by(city)
+```
+]
+ 
+.panel2-group_by-auto[
+
+```
+## # A tibble: 6 × 3
+## # Groups:   city [3]
+##   city     size  amount
+##   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt;
+## 1 New York large     23
+## 2 New York small     14
+## 3 London   large     22
+## 4 London   small     16
+## 5 Beijing  large    121
+## 6 Beijing  small     56
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;group_by |&gt; summarise&lt;/code&gt; Código
+.panel1-group_by-auto[
+
+```r
+pollution |&gt;
+  group_by(city) |&gt;
+* summarise(
+*   mean = mean(amount),
+*   sum = sum(amount),
+*   n = n()
+* )
+```
+]
+ 
+.panel2-group_by-auto[
+
+```
+## # A tibble: 3 × 4
+##   city      mean   sum     n
+##   &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+## 1 Beijing   88.5   177     2
+## 2 London    19      38     2
+## 3 New York  18.5    37     2
+```
+]
+
+&lt;style&gt;
+.panel1-group_by-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-group_by-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-group_by-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+count: false
+ 
+## &lt;code&gt;group_by |&gt; summarise&lt;/code&gt; Código &lt;small&gt;(spanish version)&lt;/small&gt;
+.panel1-group_by_spanish-auto[
+
+```r
+*pollution
+```
+]
+ 
+.panel2-group_by_spanish-auto[
+
+```
+## # A tibble: 6 × 3
+##   city     size  amount
+##   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt;
+## 1 New York large     23
+## 2 New York small     14
+## 3 London   large     22
+## 4 London   small     16
+## 5 Beijing  large    121
+## 6 Beijing  small     56
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;group_by |&gt; summarise&lt;/code&gt; Código &lt;small&gt;(spanish version)&lt;/small&gt;
+.panel1-group_by_spanish-auto[
+
+```r
+pollution |&gt;
+* group_by(city)
+```
+]
+ 
+.panel2-group_by_spanish-auto[
+
+```
+## # A tibble: 6 × 3
+## # Groups:   city [3]
+##   city     size  amount
+##   &lt;chr&gt;    &lt;chr&gt;  &lt;dbl&gt;
+## 1 New York large     23
+## 2 New York small     14
+## 3 London   large     22
+## 4 London   small     16
+## 5 Beijing  large    121
+## 6 Beijing  small     56
+```
+]
+
+---
+count: false
+ 
+## &lt;code&gt;group_by |&gt; summarise&lt;/code&gt; Código &lt;small&gt;(spanish version)&lt;/small&gt;
+.panel1-group_by_spanish-auto[
+
+```r
+pollution |&gt;
+  group_by(city) |&gt;
+* summarise(
+*   promedio = mean(amount),
+*   suma = sum(amount),
+*   conteo = n()
+* )
+```
+]
+ 
+.panel2-group_by_spanish-auto[
+
+```
+## # A tibble: 3 × 4
+##   city     promedio  suma conteo
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;  &lt;int&gt;
+## 1 Beijing      88.5   177      2
+## 2 London       19      38      2
+## 3 New York     18.5    37      2
+```
+]
+
+&lt;style&gt;
+.panel1-group_by_spanish-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-group_by_spanish-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-group_by_spanish-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+---
+
+
+## Ejercicio: en un script de R:
+
+&lt;small&gt;
+
+1. Cargue el paquete `tidyverse`, y cree un data frame con columnas `x` e `y`, cada una de las columnas
+sea 1000 números aleatorios entre -1 y 1 (recuerde la función `runif`).
+1. Genere un gráfico de puntos visualizando como se relacionan las variables `x` e `y`.
+1. Con la función `mutate` cree una variable  `r` que sea igual a `x^2 + y^2`, es decir `\(x^2 + y^2\)`.
+1. Utilize la función `if_else` (y `mutate`) para generar una cuarta variable cuya definición es: si `r` es mayor que 1 entonces vale "A", en caso contrario "B". Llame esta variable como `r2`.
+1. Ahora vuelva generar el gráfico de 3. pero coloreando el punto de acuerdo a la variable `r2`.
+1. Utilice el _combo_ `group_by(r2) |&gt; count()` para contar cuantos son "A" y "B", y luego generar la columna `p = n/sum(n)`. 
+1. Cree la columna `es_b` que indique con un 1 si el valor de `r2` es "B" y 0 si es "A", para luego
+crear la columna `convergencia` al aplicar la función `cummean` a la columna `es_b`.
+1. con ayuda de la función `row_number()` genere la columna `fila` y haga un gráfico de líneas 
+con `x = fila` e `y = 4 * convergencia`.
+&lt;/small&gt;
+
+
+---
+
+
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+*library(tidyverse)
+```
+]
+ 
+.panel2-solucion-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+*set.seed(123)
+```
+]
+ 
+.panel2-solucion-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+*df &lt;- tibble(
+* x = runif(1000, -1, 1),
+* y = runif(1000, -1, 1)
+*) 
+```
+]
+ 
+.panel2-solucion-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(1000, -1, 1),
+  y = runif(1000, -1, 1)
+)
+
+*df
+```
+]
+ 
+.panel2-solucion-auto[
+
+```
+## # A tibble: 1,000 × 2
+##          x       y
+##      &lt;dbl&gt;   &lt;dbl&gt;
+##  1 -0.425  -0.453 
+##  2  0.577   0.188 
+##  3 -0.182  -0.680 
+##  4  0.766   0.707 
+##  5  0.881   0.695 
+##  6 -0.909  -0.0442
+##  7  0.0562  0.547 
+##  8  0.785  -0.409 
+##  9  0.103  -0.869 
+## 10 -0.0868 -0.119 
+## # … with 990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(1000, -1, 1),
+  y = runif(1000, -1, 1)
+)
+
+df |&gt;
+* mutate(r = x^2 + y^2)
+```
+]
+ 
+.panel2-solucion-auto[
+
+```
+## # A tibble: 1,000 × 3
+##          x       y      r
+##      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+##  1 -0.425  -0.453  0.385 
+##  2  0.577   0.188  0.368 
+##  3 -0.182  -0.680  0.495 
+##  4  0.766   0.707  1.09  
+##  5  0.881   0.695  1.26  
+##  6 -0.909  -0.0442 0.828 
+##  7  0.0562  0.547  0.303 
+##  8  0.785  -0.409  0.783 
+##  9  0.103  -0.869  0.765 
+## 10 -0.0868 -0.119  0.0217
+## # … with 990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(1000, -1, 1),
+  y = runif(1000, -1, 1)
+)
+
+df |&gt;
+  mutate(r = x^2 + y^2) |&gt;
+* mutate(r2 = if_else(r &gt; 1, "A", "B"))
+```
+]
+ 
+.panel2-solucion-auto[
+
+```
+## # A tibble: 1,000 × 4
+##          x       y      r r2   
+##      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;
+##  1 -0.425  -0.453  0.385  B    
+##  2  0.577   0.188  0.368  B    
+##  3 -0.182  -0.680  0.495  B    
+##  4  0.766   0.707  1.09   A    
+##  5  0.881   0.695  1.26   A    
+##  6 -0.909  -0.0442 0.828  B    
+##  7  0.0562  0.547  0.303  B    
+##  8  0.785  -0.409  0.783  B    
+##  9  0.103  -0.869  0.765  B    
+## 10 -0.0868 -0.119  0.0217 B    
+## # … with 990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(1000, -1, 1),
+  y = runif(1000, -1, 1)
+)
+
+df |&gt;
+  mutate(r = x^2 + y^2) |&gt;
+  mutate(r2 = if_else(r &gt; 1, "A", "B")) |&gt;
+* mutate(es_b = if_else(r2 == "B", 1, 0))
+```
+]
+ 
+.panel2-solucion-auto[
+
+```
+## # A tibble: 1,000 × 5
+##          x       y      r r2     es_b
+##      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1 -0.425  -0.453  0.385  B         1
+##  2  0.577   0.188  0.368  B         1
+##  3 -0.182  -0.680  0.495  B         1
+##  4  0.766   0.707  1.09   A         0
+##  5  0.881   0.695  1.26   A         0
+##  6 -0.909  -0.0442 0.828  B         1
+##  7  0.0562  0.547  0.303  B         1
+##  8  0.785  -0.409  0.783  B         1
+##  9  0.103  -0.869  0.765  B         1
+## 10 -0.0868 -0.119  0.0217 B         1
+## # … with 990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(1000, -1, 1),
+  y = runif(1000, -1, 1)
+)
+
+df |&gt;
+  mutate(r = x^2 + y^2) |&gt;
+  mutate(r2 = if_else(r &gt; 1, "A", "B")) |&gt;
+  mutate(es_b = if_else(r2 == "B", 1, 0)) |&gt;
+* mutate(conv = cummean(es_b))
+```
+]
+ 
+.panel2-solucion-auto[
+
+```
+## # A tibble: 1,000 × 6
+##          x       y      r r2     es_b  conv
+##      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 -0.425  -0.453  0.385  B         1 1    
+##  2  0.577   0.188  0.368  B         1 1    
+##  3 -0.182  -0.680  0.495  B         1 1    
+##  4  0.766   0.707  1.09   A         0 0.75 
+##  5  0.881   0.695  1.26   A         0 0.6  
+##  6 -0.909  -0.0442 0.828  B         1 0.667
+##  7  0.0562  0.547  0.303  B         1 0.714
+##  8  0.785  -0.409  0.783  B         1 0.75 
+##  9  0.103  -0.869  0.765  B         1 0.778
+## 10 -0.0868 -0.119  0.0217 B         1 0.8  
+## # … with 990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución
+.panel1-solucion-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(1000, -1, 1),
+  y = runif(1000, -1, 1)
+)
+
+df |&gt;
+  mutate(r = x^2 + y^2) |&gt;
+  mutate(r2 = if_else(r &gt; 1, "A", "B")) |&gt;
+  mutate(es_b = if_else(r2 == "B", 1, 0)) |&gt;
+  mutate(conv = cummean(es_b)) |&gt;
+* mutate(fila = row_number())
+```
+]
+ 
+.panel2-solucion-auto[
+
+```
+## # A tibble: 1,000 × 7
+##          x       y      r r2     es_b  conv  fila
+##      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 -0.425  -0.453  0.385  B         1 1         1
+##  2  0.577   0.188  0.368  B         1 1         2
+##  3 -0.182  -0.680  0.495  B         1 1         3
+##  4  0.766   0.707  1.09   A         0 0.75      4
+##  5  0.881   0.695  1.26   A         0 0.6       5
+##  6 -0.909  -0.0442 0.828  B         1 0.667     6
+##  7  0.0562  0.547  0.303  B         1 0.714     7
+##  8  0.785  -0.409  0.783  B         1 0.75      8
+##  9  0.103  -0.869  0.765  B         1 0.778     9
+## 10 -0.0868 -0.119  0.0217 B         1 0.8      10
+## # … with 990 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-solucion-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-solucion-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-solucion-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+*library(tidyverse)
+```
+]
+ 
+.panel2-solucion2-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+library(tidyverse)
+
+*set.seed(123)
+```
+]
+ 
+.panel2-solucion2-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+*df &lt;- tibble(
+* x = runif(10000, -1, 1),
+* y = runif(10000, -1, 1)
+*) 
+```
+]
+ 
+.panel2-solucion2-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+)
+
+*df
+```
+]
+ 
+.panel2-solucion2-auto[
+
+```
+## # A tibble: 10,000 × 2
+##          x      y
+##      &lt;dbl&gt;  &lt;dbl&gt;
+##  1 -0.425  -0.379
+##  2  0.577  -0.351
+##  3 -0.182   0.741
+##  4  0.766  -0.343
+##  5  0.881  -0.749
+##  6 -0.909  -0.288
+##  7  0.0562  0.861
+##  8  0.785   0.750
+##  9  0.103   0.640
+## 10 -0.0868 -0.956
+## # … with 9,990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+)
+
+df |&gt;
+* mutate(
+*   r = x^2 + y^2,
+*   ri = r &lt; 1,
+*   conv = cummean(ri),
+*   row = row_number()
+*   )
+```
+]
+ 
+.panel2-solucion2-auto[
+
+```
+## # A tibble: 10,000 × 6
+##          x      y     r ri     conv   row
+##      &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 -0.425  -0.379 0.324 TRUE  1         1
+##  2  0.577  -0.351 0.456 TRUE  1         2
+##  3 -0.182   0.741 0.581 TRUE  1         3
+##  4  0.766  -0.343 0.704 TRUE  1         4
+##  5  0.881  -0.749 1.34  FALSE 0.8       5
+##  6 -0.909  -0.288 0.909 TRUE  0.833     6
+##  7  0.0562  0.861 0.745 TRUE  0.857     7
+##  8  0.785   0.750 1.18  FALSE 0.75      8
+##  9  0.103   0.640 0.421 TRUE  0.778     9
+## 10 -0.0868 -0.956 0.922 TRUE  0.8      10
+## # … with 9,990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+)
+
+df |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+    ) |&gt;
+* ggplot()
+```
+]
+ 
+.panel2-solucion2-auto[
+&lt;img src="index_files/figure-html/solucion2_auto_06_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+)
+
+df |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+    ) |&gt;
+  ggplot() +
+* geom_line(aes(row, 4 * conv))
+```
+]
+ 
+.panel2-solucion2-auto[
+&lt;img src="index_files/figure-html/solucion2_auto_07_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Posible solución v2
+.panel1-solucion2-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+df &lt;- tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+)
+
+df |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+    ) |&gt;
+  ggplot() +
+  geom_line(aes(row, 4 * conv)) +
+* geom_hline(yintercept = pi, color = "darkred")
+```
+]
+ 
+.panel2-solucion2-auto[
+&lt;img src="index_files/figure-html/solucion2_auto_08_output-1.svg" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-solucion2-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-solucion2-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-solucion2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+*library(tidyverse)
+```
+]
+ 
+.panel2-solucion3-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+*set.seed(123)
+```
+]
+ 
+.panel2-solucion3-auto[
+
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+*tibble(
+* x = runif(10000, -1, 1),
+* y = runif(10000, -1, 1)
+*) 
+```
+]
+ 
+.panel2-solucion3-auto[
+
+```
+## # A tibble: 10,000 × 2
+##          x      y
+##      &lt;dbl&gt;  &lt;dbl&gt;
+##  1 -0.425  -0.379
+##  2  0.577  -0.351
+##  3 -0.182   0.741
+##  4  0.766  -0.343
+##  5  0.881  -0.749
+##  6 -0.909  -0.288
+##  7  0.0562  0.861
+##  8  0.785   0.750
+##  9  0.103   0.640
+## 10 -0.0868 -0.956
+## # … with 9,990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+) |&gt;
+* mutate(
+*   r = x^2 + y^2,
+*   ri = r &lt; 1,
+*   conv = cummean(ri),
+*   row = row_number()
+* )
+```
+]
+ 
+.panel2-solucion3-auto[
+
+```
+## # A tibble: 10,000 × 6
+##          x      y     r ri     conv   row
+##      &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 -0.425  -0.379 0.324 TRUE  1         1
+##  2  0.577  -0.351 0.456 TRUE  1         2
+##  3 -0.182   0.741 0.581 TRUE  1         3
+##  4  0.766  -0.343 0.704 TRUE  1         4
+##  5  0.881  -0.749 1.34  FALSE 0.8       5
+##  6 -0.909  -0.288 0.909 TRUE  0.833     6
+##  7  0.0562  0.861 0.745 TRUE  0.857     7
+##  8  0.785   0.750 1.18  FALSE 0.75      8
+##  9  0.103   0.640 0.421 TRUE  0.778     9
+## 10 -0.0868 -0.956 0.922 TRUE  0.8      10
+## # … with 9,990 more rows
+```
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+) |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+  ) |&gt;
+* ggplot()
+```
+]
+ 
+.panel2-solucion3-auto[
+&lt;img src="index_files/figure-html/solucion3_auto_05_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+) |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+  ) |&gt;
+  ggplot() +
+* geom_line(aes(row, 4 * conv))
+```
+]
+ 
+.panel2-solucion3-auto[
+&lt;img src="index_files/figure-html/solucion3_auto_06_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+) |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+  ) |&gt;
+  ggplot() +
+  geom_line(aes(row, 4 * conv)) +
+* geom_hline(yintercept = pi, color = "darkred")
+```
+]
+ 
+.panel2-solucion3-auto[
+&lt;img src="index_files/figure-html/solucion3_auto_07_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+) |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+  ) |&gt;
+  ggplot() +
+  geom_line(aes(row, 4 * conv)) +
+  geom_hline(yintercept = pi, color = "darkred") +
+* scale_x_continuous(labels = scales::comma_format())
+```
+]
+ 
+.panel2-solucion3-auto[
+&lt;img src="index_files/figure-html/solucion3_auto_08_output-1.svg" width="100%" /&gt;
+]
+
+---
+count: false
+ 
+## Posible solución v3
+.panel1-solucion3-auto[
+
+```r
+library(tidyverse)
+
+set.seed(123)
+
+tibble(
+  x = runif(10000, -1, 1),
+  y = runif(10000, -1, 1)
+) |&gt;
+  mutate(
+    r = x^2 + y^2,
+    ri = r &lt; 1,
+    conv = cummean(ri),
+    row = row_number()
+  ) |&gt;
+  ggplot() +
+  geom_line(aes(row, 4 * conv)) +
+  geom_hline(yintercept = pi, color = "darkred") +
+  scale_x_continuous(labels = scales::comma_format()) +
+* scale_y_continuous(
+*   sec.axis = sec_axis(trans = ~., breaks = pi, labels = expression(pi))
+* )
+```
+]
+ 
+.panel2-solucion3-auto[
+&lt;img src="index_files/figure-html/solucion3_auto_09_output-1.svg" width="100%" /&gt;
+]
+
+&lt;style&gt;
+.panel1-solucion3-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-solucion3-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-solucion3-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+  
+## El Pipe (_paip_) `|&gt;`
+  
+Los pipes son una herramienta poderosa para expresar claramente una secuencia de múltiples operaciones. Hasta aquí, has venido usándolos sin saber cómo funcionan o qué alternativas existen. En este capítulo ya es tiempo de explorarlos en más detalle. En él aprenderás qué alternativas existen, cuándo no deberías utilizarlos y algunas herramientas útiles relacionadas.
+
+De forma general veremos que `z |&gt; f()` es equivalente a `f(z)` y en el caso 
+de aplicar parámetros extras tenemos que `z |&gt; g(y)` es `g(x, y)`.
+
+En el próximo ejemplo veremos que el **pipe** (`|&gt;` o `%&gt;%`) ayuda a la 
+legibilidad del código.
+
+Más en el capítulo [Pipes](https://es.r4ds.hadley.nz/pipes.html) en R4DS.
+
+
+---
+
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+*x &lt;- 34
+```
+]
+ 
+.panel2-pipe-auto[
+
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+*tan(cos(sqrt(log(x))))
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+*y &lt;- x
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+*y &lt;- log(y)
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+*y &lt;- sqrt(y)
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+*y &lt;- cos(y)
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+y &lt;- cos(y)
+*y &lt;- tan(y)
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+y &lt;- cos(y)
+y &lt;- tan(y)
+*y 
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.311816
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+y &lt;- cos(y)
+y &lt;- tan(y)
+y
+
+*x 
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] 34
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+y &lt;- cos(y)
+y &lt;- tan(y)
+y
+
+x |&gt;
+* log()
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] 3.526361
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+y &lt;- cos(y)
+y &lt;- tan(y)
+y
+
+x |&gt;
+  log() |&gt;
+* sqrt()
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] 1.877861
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+y &lt;- cos(y)
+y &lt;- tan(y)
+y
+
+x |&gt;
+  log() |&gt;
+  sqrt() |&gt;
+* cos()
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.3022616
+```
+]
+
+---
+count: false
+ 
+## Ejemplo pipe
+.panel1-pipe-auto[
+
+```r
+x &lt;- 34
+
+tan(cos(sqrt(log(x))))
+
+y &lt;- x
+y &lt;- log(y)
+y &lt;- sqrt(y)
+y &lt;- cos(y)
+y &lt;- tan(y)
+y
+
+x |&gt;
+  log() |&gt;
+  sqrt() |&gt;
+  cos() |&gt;
+* tan()
+```
+]
+ 
+.panel2-pipe-auto[
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.311816
+```
+
+```
+## [1] -0.311816
+```
+]
+
+&lt;style&gt;
+.panel1-pipe-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-pipe-auto {
+  color: black;
+  width: 49%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-pipe-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%",
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
