@@ -25,6 +25,9 @@ editor_options:
 source(here::here("docs/knitr-setup.R"))
 library(tidyverse)
 library(flipbookr)
+
+# knitr::purl("docs/index.Rmd")
+# fs::file_move("index.R", "docs/index.R")
 ```
 
 ## Antes de empezar
