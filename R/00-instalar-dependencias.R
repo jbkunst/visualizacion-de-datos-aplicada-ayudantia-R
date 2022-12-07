@@ -10,7 +10,8 @@ install.packages(
    "highcharter",
    "leaflet",
    "gganimate",
-   "plotly"
+   "plotly",
+   "data.table"
  )
 )
 
