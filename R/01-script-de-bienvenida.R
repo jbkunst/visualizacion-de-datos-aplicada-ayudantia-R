@@ -1,5 +1,6 @@
-# primero ejecutar R/00-instalar-dependencias.R
-
+#
+# primero ejecutar R/00-instalar-dependencias.R !!!
+#
 # cargar paquetes
 library(tidyverse)
 library(datos)
