@@ -87,6 +87,7 @@ xaringanthemer::style_mono_accent(
 )
 
 # xaringanExtra -----------------------------------------------------------
+options(htmltools.dir.version = FALSE)
 xaringanExtra::use_scribble(pen_color = PARS$color_main) # press S
 xaringanExtra::use_tile_view()                      # press O
 xaringanExtra::use_webcam()                         # press W

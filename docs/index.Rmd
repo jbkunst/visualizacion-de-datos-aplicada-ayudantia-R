@@ -26,7 +26,7 @@ source(here::here("docs/knitr-setup.R"))
 library(tidyverse)
 library(flipbookr)
 
-knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
 
 # knitr::purl("docs/index.Rmd")
 # fs::file_move("index.R", "docs/index.R")
@@ -54,6 +54,7 @@ nos servirá como guía.
 3. [Comunicación](https://es.r4ds.hadley.nz/r-markdown.html)
   - Mardown, formatos: html, doc, pdf, etc.:
   - [{rmarkdown}](https://github.com/rstudio/cheatsheets/raw/main/translations/spanish/rmarkdown_es.pdf).
+  - [{htmlwidgets}](https://gallery.htmlwidgets.org/).
 
 
 ---
@@ -744,3 +745,149 @@ knitr::include_graphics("images/RMarkdownFlow.png")
 2. Crea un nuevo documento R Markdown con File > New File > R Markdown… Haz clic en el icono apropiado de Knit. Haz Knit usando el atajo de teclado apropiado. Verifica que puedes modificar el input y la actualización del output.
 
 3. Compara y contrasta el notebook de R con los archivos de R markdown que has creado antes. ¿Cómo son similares los outputs? ¿Cómo son diferentes? ¿Cómo son similares los inputs? ¿En qué se diferencian? ¿Qué ocurre si copias el encabezado YAML de uno al otro?
+
+
+---
+
+## HTMLWidgets (extensión/complemento)
+
+HTMLWidgets son un tipo de paquetes que nos permiten realizar visualizaciones en HTML
+las cuales se pueden usar en (1) consola, (2) integrar con rmarkdown y también (3) shiny.
+
+Existen una gran cantida de paquetes https://gallery.htmlwidgets.org/, y nos sirven 
+para complementar nuestra aplicación. 
+
+- https://plotly.com/r/
+- https://jkunst.com/highcharter/
+- https://echarts4r.john-coene.com/
+- https://rstudio.github.io/leaflet/
+- https://rstudio.github.io/DT/
+
+Ejemplo de uso de script `03-clase-script-htmlwidgets.R`.
+
+---
+
+`r flipbookr::chunk_reveal("ggplot2", title = "## Antes, un poco de {ggplot2}")`
+
+```{r ggplot2, include = FALSE}
+library(ggplot2)
+
+data(iris)
+
+ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
+  geom_point(aes(color = Species), size = 2.5) +
+  scale_color_viridis_d(end = .9) +
+  geom_smooth(method = "lm") +
+  facet_wrap(vars(Species)) +
+  theme_minimal()
+```
+
+---
+
+`r flipbookr::chunk_reveal("plotly", title = "## {plotly}")`
+
+```{r plotly, include = FALSE}
+library(ggplot2)
+library(plotly)
+
+data(iris)
+
+p <- ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
+  geom_point(aes(color = Species), size = 2.5) +
+  scale_color_viridis_d(end = .9) +
+  geom_smooth(method = "lm") +
+  facet_wrap(vars(Species)) +
+  theme_minimal()
+
+ggplotly(p)
+```
+
+---
+
+`r flipbookr::chunk_reveal("highcharter", title = "## {highcharter}")`
+
+```{r highcharter, include = FALSE}
+library(highcharter)
+library(forecast)
+
+data("AirPassengers")
+
+modelo <- forecast(auto.arima(AirPassengers))
+
+hchart(modelo) |>
+  hc_add_theme(hc_theme_hcrt()) |>
+  hc_navigator(enabled = TRUE) |>
+  hc_rangeSelector(enabled = TRUE) |>
+  hc_title(text = "Proyección")
+```
+
+---
+
+`r flipbookr::chunk_reveal("sismos", title = "## Antes, unos datos", widths = c(1, 2))`  
+
+```{r sismos, include = FALSE}
+library(rvest)   # descargar datos de paginas web
+
+url <- "https://www.sismologia.cl/sismicidad/catalogo/2022/07/20220721.html"
+
+read_html(url) |>
+  html_table() |>
+  dplyr::nth(2) |>
+  janitor::clean_names() |>
+  tidyr::separate(
+    latitud_longitud,
+    into = c("latitud", "longitud"),
+    sep = " ", convert = TRUE
+  )
+
+datos <- read_html(url) |>
+  html_table() |>
+  dplyr::nth(2) |>
+  janitor::clean_names() |>
+  tidyr::separate(
+    latitud_longitud,
+    into = c("latitud", "longitud"),
+    sep = " ", convert = TRUE
+  )
+```
+
+---
+
+`r flipbookr::chunk_reveal("dt", title = "## {DT}", widths = c(1, 4))`
+
+```{r dt, include = FALSE}
+library(DT)
+
+datatable(datos)
+```
+
+---
+
+`r flipbookr::chunk_reveal("leaflet", title = "## {leaflet}")`
+
+```{r leaflet, include = FALSE}
+library(leaflet)
+
+leaflet(datos) |>
+  addTiles() |>
+  addMarkers(
+    lng = ~longitud,
+    lat = ~latitud,
+    popup = ~as.character(magnitud_2),
+    label = ~as.character(`fecha_local_lugar`)
+  ) |>
+  addProviderTiles("Esri.WorldImagery")
+```
+
+---
+
+## HTMLWidgets en reporte/dashboard
+
+<br>
+
+La integración es inmediata **siempre y cuando** el output sea html o 
+dashboard (que es también html) y slides (que no sea pdf/ppt).
+
+
+
+ 
