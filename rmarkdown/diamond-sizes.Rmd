@@ -4,8 +4,10 @@ author: "Nostros"
 date: "2016-08-25"
 output:
   html_document: default
-  word_document: default
   pdf_document: default
+  word_document: default
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -17,12 +19,20 @@ pequenios <- diamantes %>%
   filter(quilate <= 2.5)
 ```
 
-Tenemos datos respecto de `r nrow(diamantes)` diamantes. Únicamente 
-`r nrow(diamantes) - nrow(pequenios)` son mayores a 2,5 quilates. 
-La distribución de los diamantes pequeños se muestra a continuación:
+Tenemos datos respecto de `r nrow(diamantes)` diamantes. Únicamente `r nrow(diamantes) - nrow(pequenios)` son mayores a 2,5 quilates. La distribución de los diamantes pequeños se muestra a continuación:
+
+$$X_i = \sum x_i$$
 
 ```{r, echo = FALSE, message=FALSE}
 pequenios %>%
   ggplot(aes(quilate)) +
   geom_histogram()
 ```
+
+Acá los resultados son:
+
+
+```{r, echo=FALSE}
+knitr::kable(head(pequenios))
+```
+
