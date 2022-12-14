@@ -11,7 +11,13 @@ install.packages(
    "leaflet",
    "gganimate",
    "plotly",
-   "data.table"
+   "data.table",
+   "R.utils",
+   "forecast",
+   "DT",
+   "rvest",
+   "leaflet",
+   "sf"
  )
 )
 

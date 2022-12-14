@@ -1,6 +1,8 @@
 library(tidyverse) # dplyr, ggplot2, y amigos
 library(lubridate)
 
+# recuerde el script `R/00-instalar-dependencias.R` !!!!
+
 # esto lo hago para cambiar el tema por defecto de ggplot
 theme_set(theme_minimal())
 
@@ -125,22 +127,99 @@ ggplot(dispositivo) +
 
 
 ggplot(dispositivo, aes(longitude, latitude)) +
-  geom_path(aes(color = fecha_hora), size = 3) +
+  geom_path(aes(color = fecha_hora), linewidth = 3) +
   theme(legend.position = "bottom")
-
 
 dispositivo2 <- dispositivo |>
   select(-parte_dia, -hora)
 
-ggplot(dispositivo, aes(longitude, latitude)) +
+p <- ggplot(dispositivo, aes(longitude, latitude)) +
   geom_path(color = "gray", data = dispositivo2) +
-  geom_path(aes(color = fecha_hora), size = 3) +
+  geom_line(aes(color = fecha_hora), linewidth = 3) +
   facet_wrap(vars(parte_dia))
 
+
 ggplot(dispositivo, aes(longitude, latitude)) +
   geom_path(color = "gray", data = dispositivo2) +
-  geom_path(aes(color = fecha_hora), size = 3) +
+  geom_path(aes(color = fecha_hora), linewidth = 3) +
   facet_wrap(vars(hour(hora)))
 
+
+
+
+# contexto ----------------------------------------------------------------
+# gran santiago
+gs <- sf::st_read("https://raw.githubusercontent.com/robsalasco/precenso_2016_geojson_chile/87bc72ea23ad19a116ae9af02fa1cb5ae06f29f3/Extras/GRAN_SANTIAGO.geojson")
+
+gs <- as_tibble(gs)
+gs <- sf::st_as_sf(gs)
+
+gs <- rename_with(gs, str_to_lower)
+
+
+# plot --------------------------------------------------------------------
+ggplot() +
+  # agregamos la informacion que viene del datoa geofráfico
+  geom_sf(
+    data = gs,
+    aes(geometry = geometry)
+  ) +
+  # agregamos datos del dispositivo
+  geom_path(
+    data = dispositivo,
+    aes(longitude, latitude, color = fecha_hora),
+    linewidth = 3
+    ) +
+  facet_wrap(vars(parte_dia))
+
+
+
+
+# coropletas --------------------------------------------------------------
+# "pintado" comunas
+
+glimpse(gs)
+
+gs |> count(comuna)
+gs |> count(nom_comuna)
+
+datos |> count(comuna)
+
+gs <- gs |>
+  mutate(comuna = str_to_title(nom_comuna))
+
+datos_comuna_pdia <- datos |>
+  group_by(comuna, parte_dia) |>
+  count()
+
+gs2 <- left_join(gs, datos_comuna_pdia, by = "comuna")
+
+glimpse(gs2)
+
+
+ggplot() +
+  geom_sf(
+    data = gs2,
+    aes(geometry = geometry, fill = n)
+  ) +
+  scale_fill_viridis_c() +
+  facet_wrap(vars(parte_dia))
+
+plotly::ggplotly()
+
+
+
+# Desafío de proyecto -----------------------------------------------------
+#
+# 1. para dispositivo considrere la comuna más frecuente en la mañana para
+#    considerarla punto de partidas
+# 2. lo mismo anterior pero usando la comuna más frecuente de la tarde
+#    para considerarla como comuna de destino.
+# 3. intente recrear una mátriz de origen destino con los dispositivos que
+#    poseen tanto comuna en la tabla de 1. y 2.
+# 4. Use `geom_tile` para visualizar la relación.
+# 5. Elimine comunas poco frecuentes/con pocos registros
+# 6. Deberá normalizar por comuna de origen? Esto para no distorcionar los
+#    resultados al comparar comunas con poco/mucha cardinalidad.
 
 
