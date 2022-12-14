@@ -1,0 +1,24 @@
+---
+title: "Tamaño de los diamantes"
+date: 2016-08-25
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(datos)
+library(ggplot2)
+library(dplyr)
+
+pequenios <- diamantes %>%
+  filter(quilate <= 2.5)
+```
+
+Tenemos datos respecto de `r nrow(diamantes)` diamantes. Únicamente 
+`r nrow(diamantes) - nrow(pequenios)` son mayores a 2,5 quilates. 
+La distribución de los diamantes pequeños se muestra a continuación:
+
+```{r, echo = FALSE}
+pequenios %>%
+  ggplot(aes(quilate)) +
+  geom_histogram()
+```

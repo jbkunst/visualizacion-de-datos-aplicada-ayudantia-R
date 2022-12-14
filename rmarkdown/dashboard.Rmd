@@ -1,0 +1,43 @@
+---
+title: "Dashboard de distribución de diamantes"
+output: flexdashboard::flex_dashboard
+---
+
+```{r setup, include = FALSE}
+library(datos)
+library(ggplot2)
+library(dplyr)
+knitr::opts_chunk$set(fig.width = 5, fig.asp = 1 / 3)
+```
+
+## Columna 1
+
+### Quilate
+
+```{r}
+ggplot(diamantes, aes(quilate)) + geom_histogram(binwidth = 0.1)
+```
+
+### Corte
+
+```{r}
+ggplot(diamantes, aes(corte)) + geom_bar()
+```
+
+### Color
+
+```{r}
+ggplot(diamantes, aes(color)) + geom_bar()
+```
+
+## Columna 2
+
+### Diamantes más grandes
+
+```{r}
+diamantes %>%
+  arrange(desc(quilate)) %>%
+  head(100) %>%
+  select(quilate, corte, color, precio) %>%
+  DT::datatable()
+```

@@ -1,0 +1,48 @@
+Formato de texto
+------------------------------------------------------------
+
+*cursiva*   o _cursiva_
+**negrita**   __negrita__
+`code`
+superíndice^2^ y subíndice~2~
+
+Encabezados
+------------------------------------------------------------
+
+# Encabezado de primer nivel
+
+## Encabezado de segundo nivel
+
+### Encabezado de tercer nivel
+
+Listas
+------------------------------------------------------------
+
+*   Elemento 1 en lista no enumerada
+
+*   Elemento 2
+
+    * Elemento 2a
+
+    * Elemento 2b
+
+1.  Elemento 1 en lista enumerada
+
+1.  Elemento 2. La numeración se incrementa automáticamente en el output.
+
+Enlaces e imágenes
+------------------------------------------------------------
+
+<http://ejemplo.com>
+
+[texto del enlace](http://ejemplo.com)
+
+![pie de página opcional](ruta/de/la/imagen.png)
+
+Tablas 
+------------------------------------------------------------
+
+Primer encabezado     | Segundo encabezado
+--------------------- | ---------------------
+Contenido de la celda | Contenido de la celda
+Contenido de la celda | Contenido de la celda
