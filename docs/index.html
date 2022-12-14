@@ -4,7 +4,7 @@
     <title>Visualización de datos aplicada</title>
     <meta charset="utf-8" />
     <meta name="author" content=" Joshua Kunst @jbkunst" />
-    <meta name="date" content="2022-11-30" />
+    <meta name="date" content="2022-12-14" />
     <script src="libs/header-attrs-2.17/header-attrs.js"></script>
     <link rel="stylesheet" href="css/xaringan-themer.css" type="text/css" />
     <link rel="stylesheet" href="css/styles.css" type="text/css" />
@@ -23,7 +23,7 @@ class: left, middle, title-slide
 ### <br>Joshua Kunst<br><span class="citation">@jbkunst</span>
 ]
 .date[
-### 2022-11-30
+### 2022-12-14
 ]
 
 ---
@@ -39,6 +39,22 @@ encontraremos el programa, clases, datos.
 
 - La bibliografía complementaría será _R para ciencia de datos_ https://es.r4ds.hadley.nz/, 
 nos servirá como guía.
+
+---
+
+# Temas ayudantía
+
+1. [Visualización](https://es.r4ds.hadley.nz/visualizaci%C3%B3n-de-datos.html)
+  - Codificación de información.
+  - Mapeos de variables.
+  - [{ggplot2}](https://github.com/rstudio/cheatsheets/raw/main/translations/spanish/data-visualization_es.pdf).
+2. [Manipulación](https://es.r4ds.hadley.nz/transform.html)
+  - Verbos/acciones.
+  - [{dplyr}](https://github.com/rstudio/cheatsheets/blob/main/translations/spanish/data-transformation_es.pdf).
+3. [Comunicación](https://es.r4ds.hadley.nz/r-markdown.html)
+  - Mardown, formatos: html, doc, pdf, etc.:
+  - [{rmarkdown}](https://github.com/rstudio/cheatsheets/raw/main/translations/spanish/rmarkdown_es.pdf).
+
 
 ---
 
@@ -80,7 +96,7 @@ class: center, inverse, middle
 
 # Visualización de datos
 
-#### Análisis exploratorio de datos
+#### Análisis exploratorio de datos_
 
 
 ---
@@ -361,6 +377,8 @@ ggplot(
 ## A la consola!
 
 Ejecutar el script `R/01-script-de-bienvenida.R`
+
+(Quizás antes el "R/00-instalar-dependencias.R")
 
 ---
 
@@ -1347,8 +1365,7 @@ pollution |&gt;
 
 ---
 
-
-## Ejercicio 2.
+## Ejercicio 2
 
 &lt;small&gt;
 
@@ -2707,6 +2724,113 @@ x |&gt;
 
 
 
+
+
+---
+
+class: center, inverse, middle
+
+# rmarkdown
+
+#### Comunicar resultados_
+
+---
+
+## Comunicar resultados
+
+https://es.r4ds.hadley.nz/introducci%C3%B3n-18.html
+
+Hasta aquí, hemos aprendido a usar las herramientas para importar tus datos en R, ordenarlos de una manera conveniente para el análisis, y luego interpretarlos a través de su transformación, visualización y modelado. 
+
+&lt;img src="images/data-science-communicate.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## {rmarkdown}
+
+Revisar https://garrettgman.github.io/rmarkdown/index.html!!
+
+- R Markdown provee un marco de escritura para ciencia de datos.
+
+- Combina tu código, sus resultados y tus comentarios.
+
+- Los documentos de R Markdown son **reproducibles**.
+
+- Soportan docenas de formatos de salida tales como PDFs, archivos de Word, presentaciones y más.
+
+
+---
+
+## Ejemplo .Rmd (&lt;small&gt;rmarkdown/diamond-sizes.Rmd&lt;/small&gt;)
+
+.pull-left[
+&lt;small&gt;
+
+````
+---
+title: "Tamaño de los diamantes"
+date: 2016-08-25
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(datos)
+library(ggplot2)
+library(dplyr)
+
+pequenios &lt;- diamantes %&gt;%
+  filter(quilate &lt;= 2.5)
+```
+
+Tenemos datos respecto de `r nrow(diamantes)` diamantes. Únicamente 
+`r nrow(diamantes) - nrow(pequenios)` son mayores a 2,5 quilates. 
+La distribución de los diamantes pequeños se muestra a continuación:
+
+```{r, echo = FALSE}
+pequenios %&gt;%
+  ggplot(aes(quilate)) +
+  geom_histogram()
+```
+````
+&lt;/small&gt;
+]
+
+.pull-right[
+Contiene tres tipos importantes de contenido:
+
+ 1. Un encabezado YAML (opcional) rodeado de `---`, Parámetros generales.
+ 1. __Bloques__ de código de R rodeados de ```` ``` ````.
+ 1. Texto mezclado con formateos de texto simple como `# Encabezado`, `_itálicas_`,
+ `**negrita**`, etc..
+]
+
+---
+
+# Formatos
+
+&lt;img src="images/RMarkdownFlow.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+Revisar https://garrettgman.github.io/rmarkdown/formats.html !
+
+1. Documentos: html, word, pdf, y otros.
+1. Slides
+  - [Xaringan](https://slides.yihui.org/xaringan/).
+  - [reavealJS](https://garrettgman.github.io/rmarkdown/revealjs_presentation_format.html), (ejemplo .Rmd [acá](https://github.com/rstudio/revealjs/blob/main/examples/simple.Rmd))
+1. Dashboard con [flexdashboard](https://pkgs.rstudio.com/flexdashboard/index.html).
+1. Libros, páginas web, blogs,
+1. ...
+
+
+---
+
+# Ejercicio 3
+
+ 
+1. Crea un nuevo notebook usando File &gt; New File &gt; R Notebook. Lee las instrucciones. Practica ejecutando los bloques. Verifica que puedes modificar el código, re-ejecútalo, y observa la salida modificada.
+
+2. Crea un nuevo documento R Markdown con File &gt; New File &gt; R Markdown… Haz clic en el icono apropiado de Knit. Haz Knit usando el atajo de teclado apropiado. Verifica que puedes modificar el input y la actualización del output.
+
+3. Compara y contrasta el notebook de R con los archivos de R markdown que has creado antes. ¿Cómo son similares los outputs? ¿Cómo son diferentes? ¿Cómo son similares los inputs? ¿En qué se diferencian? ¿Qué ocurre si copias el encabezado YAML de uno al otro?
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

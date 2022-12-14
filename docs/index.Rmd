@@ -26,6 +26,8 @@ source(here::here("docs/knitr-setup.R"))
 library(tidyverse)
 library(flipbookr)
 
+knitr::opts_chunk$set(cache = TRUE)
+
 # knitr::purl("docs/index.Rmd")
 # fs::file_move("index.R", "docs/index.R")
 ```
@@ -37,6 +39,22 @@ encontraremos el programa, clases, datos.
 
 - La bibliografía complementaría será _R para ciencia de datos_ https://es.r4ds.hadley.nz/, 
 nos servirá como guía.
+
+---
+
+# Temas ayudantía
+
+1. [Visualización](https://es.r4ds.hadley.nz/visualizaci%C3%B3n-de-datos.html)
+  - Codificación de información.
+  - Mapeos de variables.
+  - [{ggplot2}](https://github.com/rstudio/cheatsheets/raw/main/translations/spanish/data-visualization_es.pdf).
+2. [Manipulación](https://es.r4ds.hadley.nz/transform.html)
+  - Verbos/acciones.
+  - [{dplyr}](https://github.com/rstudio/cheatsheets/blob/main/translations/spanish/data-transformation_es.pdf).
+3. [Comunicación](https://es.r4ds.hadley.nz/r-markdown.html)
+  - Mardown, formatos: html, doc, pdf, etc.:
+  - [{rmarkdown}](https://github.com/rstudio/cheatsheets/raw/main/translations/spanish/rmarkdown_es.pdf).
+
 
 ---
 
@@ -78,7 +96,7 @@ class: center, inverse, middle
 
 # Visualización de datos
 
-#### Análisis exploratorio de datos
+#### Análisis exploratorio de datos_
 
 
 ---
@@ -506,8 +524,7 @@ pollution |>
 
 ---
 
-
-## Ejercicio 2.
+## Ejercicio 2
 
 <small>
 
@@ -640,3 +657,90 @@ x |>
   cos() |> 
   tan()
 ```
+
+
+---
+
+class: center, inverse, middle
+
+# rmarkdown
+
+#### Comunicar resultados_
+
+---
+
+## Comunicar resultados
+
+https://es.r4ds.hadley.nz/introducci%C3%B3n-18.html
+
+Hasta aquí, hemos aprendido a usar las herramientas para importar tus datos en R, ordenarlos de una manera conveniente para el análisis, y luego interpretarlos a través de su transformación, visualización y modelado. 
+
+```{r out.width="60%", fig.align='center', echo=FALSE}
+knitr::include_graphics("images/data-science-communicate.svg")
+```
+
+---
+
+## {rmarkdown}
+
+Revisar https://garrettgman.github.io/rmarkdown/index.html
+
+- R Markdown provee un marco de escritura para ciencia de datos.
+
+- Combina tu código, sus resultados y tus comentarios.
+
+- Los documentos de R Markdown son **reproducibles**.
+
+- Soportan varios formatos de salida tales como PDFs, archivos de Word, presentaciones y más.
+
+
+---
+
+## Ejemplo .Rmd (<small>rmarkdown/diamond-sizes.Rmd</small>)
+
+.pull-left[
+<small>
+```{r echo = FALSE, comment = ""}
+cat(htmltools::includeText(here::here("rmarkdown/diamond-sizes.Rmd")))
+```
+</small>
+]
+
+.pull-right[
+Contiene tres tipos importantes de contenido:
+
+ 1. Un encabezado YAML (opcional) rodeado de `---`, Parámetros generales.
+ 1. __Bloques__ de código de R rodeados de ```` ``` ````.
+ 1. Texto mezclado con formateos de texto simple como `# Encabezado`, `_itálicas_`,
+ `**negrita**`, etc..
+]
+
+---
+
+# Formatos
+
+https://garrettgman.github.io/rmarkdown/formats.html
+
+```{r out.width="60%", fig.align='center', echo=FALSE}
+knitr::include_graphics("images/RMarkdownFlow.png")
+```
+
+
+1. Documentos: html, word, pdf, y otros.
+1. Slides
+  - [Xaringan](https://slides.yihui.org/xaringan/).
+  - [reavealJS](https://garrettgman.github.io/rmarkdown/revealjs_presentation_format.html), (ejemplo .Rmd [acá](https://github.com/rstudio/revealjs/blob/main/examples/simple.Rmd))
+1. Dashboard con [flexdashboard](https://pkgs.rstudio.com/flexdashboard/index.html).
+1. Libros, páginas web, blogs, etc, etc.
+
+
+---
+
+# Ejercicio 3
+
+ 
+1. Crea un nuevo notebook usando File > New File > R Notebook. Lee las instrucciones. Practica ejecutando los bloques. Verifica que puedes modificar el código, re-ejecútalo, y observa la salida modificada.
+
+2. Crea un nuevo documento R Markdown con File > New File > R Markdown… Haz clic en el icono apropiado de Knit. Haz Knit usando el atajo de teclado apropiado. Verifica que puedes modificar el input y la actualización del output.
+
+3. Compara y contrasta el notebook de R con los archivos de R markdown que has creado antes. ¿Cómo son similares los outputs? ¿Cómo son diferentes? ¿Cómo son similares los inputs? ¿En qué se diferencian? ¿Qué ocurre si copias el encabezado YAML de uno al otro?
