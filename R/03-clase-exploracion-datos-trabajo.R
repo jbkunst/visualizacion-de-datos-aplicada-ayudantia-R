@@ -61,7 +61,6 @@ ggplot(datos) +
   geom_histogram(aes(hora))
 
 # quizás algo menos detallado en un principio:
-
 hm("7:00")
 
 # (como SQL)
@@ -78,8 +77,11 @@ datos <- datos |>
 datos |>
   count(parte_dia)
 
-ggplot(datos) +
-  geom_bar(aes(parte_dia))
+d1 <- datos |>
+  count(parte_dia)
+
+ggplot(d1) +
+  geom_col(aes(parte_dia, n))
 
 # por que ese orden?
 # definiremos el orden!:
@@ -88,15 +90,22 @@ cat_parte_dia <- c("Madrugada", "Mañana", "Tarde", "Noche")
 datos <- datos |>
   mutate(parte_dia = factor(parte_dia, levels = cat_parte_dia))
 
-ggplot(datos) +
-  geom_bar(aes(parte_dia))
+d1 <- datos |>
+  count(parte_dia)
 
-ggplot(datos) +
-  geom_bar(aes(parte_dia)) +
+ggplot(d1) +
+  geom_col(aes(parte_dia, n))
+
+d2 <- datos |>
+  count(parte_dia, comuna)
+
+ggplot(d2) +
+  geom_col(aes(parte_dia, n)) +
   facet_wrap(vars(comuna))
 
-ggplot(datos) +
-  geom_bar(aes(parte_dia)) +
+ggplot(d2) +
+  geom_col(aes(parte_dia, n)) +
+  facet_wrap(vars(comuna))
   facet_wrap(vars(comuna), scales = "free_y")
 
 # Quizás agrupar por zonas?
@@ -109,25 +118,30 @@ datos |>
   )
 
 # Dispositivo con más registros -------------------------------------------
-
+datos |>
+  count(device_id, sort = TRUE)
 
 # Dispositivos con más comunas --------------------------------------------
 datos |>
   distinct(device_id, comuna) |>
   count(device_id, sort = TRUE)
+
 # 2ad157d0-cccc-4b71-b2b1-fed253cfe5d0
 # 315781b4-8dad-429b-a3a1-3364cffb2532
-dispositivo <- datos |>
-  filter(device_id == "2ad157d0-cccc-4b71-b2b1-fed253cfe5d0") |>
-  arrange(hora)
 
+dispositivo <- datos |>
+  filter(device_id == "315781b4-8dad-429b-a3a1-3364cffb2532") |>
+  arrange(hora)
 
 ggplot(dispositivo) +
   geom_point(aes(longitude, latitude))
 
+dispositivo |>
+  count(comuna, sort = TRUE)
 
 ggplot(dispositivo, aes(longitude, latitude)) +
   geom_path(aes(color = fecha_hora), linewidth = 3) +
+  scale_color_viridis_c() +
   theme(legend.position = "bottom")
 
 dispositivo2 <- dispositivo |>
@@ -135,16 +149,15 @@ dispositivo2 <- dispositivo |>
 
 p <- ggplot(dispositivo, aes(longitude, latitude)) +
   geom_path(color = "gray", data = dispositivo2) +
-  geom_line(aes(color = fecha_hora), linewidth = 3) +
+  geom_path(aes(color = fecha_hora), linewidth = 3) +
   facet_wrap(vars(parte_dia))
 
+p
 
 ggplot(dispositivo, aes(longitude, latitude)) +
   geom_path(color = "gray", data = dispositivo2) +
   geom_path(aes(color = fecha_hora), linewidth = 3) +
   facet_wrap(vars(hour(hora)))
-
-
 
 
 # contexto ----------------------------------------------------------------
@@ -174,10 +187,8 @@ ggplot() +
 
 
 
-
 # coropletas --------------------------------------------------------------
 # "pintado" comunas
-
 glimpse(gs)
 
 gs |> count(comuna)
