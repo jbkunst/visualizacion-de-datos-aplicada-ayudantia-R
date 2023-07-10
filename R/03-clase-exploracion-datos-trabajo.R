@@ -33,6 +33,7 @@ datos <- datos |>
     .before = timestamp
     )
 
+as_datetime(1616025602000/1000)
 glimpse(datos)
 
 
@@ -59,6 +60,9 @@ datos |>
 # distribución de hora de conexiones a internet ---------------------------
 ggplot(datos) +
   geom_histogram(aes(hora))
+
+ggplot(datos) +
+  geom_histogram(aes(fecha_hora))
 
 # quizás algo menos detallado en un principio:
 hm("7:00")
